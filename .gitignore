@@ -1,4 +1,5 @@
-.DS_Store
+.DS_Store*
+.hubot_history
+node_modules
 
-/.bundle
 /.envrc
