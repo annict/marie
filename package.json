@@ -18,7 +18,7 @@
     "hubot-scripts": "^2.16.2",
     "hubot-shipit": "^0.2.0",
     "hubot-slack": "^3.4.0",
-    "needle": "^0.10.0"
+    "request": "^2.65.0"
   },
   "engines": {
     "node": "0.10.x"

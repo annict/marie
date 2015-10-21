@@ -1,37 +1,50 @@
 # Description:
 #   デプロイコマンド
 
-needle = require("needle")
+request = require("request")
 
-ENDPOINT = "https://annict.deploybot.com/api/v1"
+DEPLOYBOT_API_TOKEN = process.env["DEPLOYBOT_API_TOKEN"]
 
 class Client
+  ENDPOINT = "https://annict.deploybot.com"
+  API_ENDPOINT = "#{ENDPOINT}/api/v1"
+  ENVIRONMENT_ID = process.env["DEPLOYBOT_ENVIRONMENT_ID"]
+
   constructor: (token) ->
     @token = token
 
-  deploy: ->
-    data =
-      environment_id: 37417
+  request: (method, path, headers, body, callback) ->
     options =
-      headers:
-        "X-Api-Token": process.env["DEPLOYBOT_API_TOKEN"]
-    needle.post "#{ENDPOINT}/deployments", data, options, (err, response) ->
-      console.log 'response: ', response
-
-  environments: ->
-    options =
-      url: "#{ENDPOINT}/environments"
+      url: API_ENDPOINT
       headers:
         "X-Api-Token": @token
-    request options, (error, response, body) ->
-      console.log 'error: ', error
-      console.log 'response: ', response
-      console.log 'body: ', body
+    options.method = method
+    options.url += path
+    options.json = body
 
+    request options, callback
+
+  post: (path, options, callback) ->
+    @request "POST", path, options.headers, options.body, callback
+
+  deploy: (callback) ->
+    @post "/deployments",
+      body:
+        environment_id: ENVIRONMENT_ID
+    , (error, response, body) ->
+      return callback error if error
+
+      repositoryId = body.repository_id
+      deploymentId = body.id
+      url = "#{ENDPOINT}/#{repositoryId}/deployments/#{deploymentId}"
+
+      callback null,
+        url: url
 
 module.exports = (robot) ->
-  console.log("api_token: ", process.env["DEPLOYBOT_API_TOKEN"])
   robot.respond /deploy\s+production/, (res) ->
-    res.reply("のっ！")
-    client = new Client(process.env["DEPLOYBOT_API_TOKEN"])
-    client.deploy()
+    res.send("のっ！")
+    client = new Client(DEPLOYBOT_API_TOKEN)
+    client.deploy (error, data) ->
+      return console.error error if error
+      res.send("つ #{data.url}")
