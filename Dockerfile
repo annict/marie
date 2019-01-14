@@ -13,8 +13,7 @@ ENV PAGER=busybox\ less
 
 WORKDIR /marie/
 
-# COPY Gemfile Gemfile.lock /marie/
-COPY Gemfile /marie/
+COPY Gemfile Gemfile.lock /marie/
 RUN bundle install -j$(getconf _NPROCESSORS_ONLN)
 
 COPY . /marie/
