@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+  ruby:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: /bin/ash -c 'bundle exec ruby main.rb'
+    env_file:
+      - .env.development
+      - .env.development.local
+    stdin_open: true # for Pry
+    tty: true # for Pry
+    volumes:
+      - ./:/marie

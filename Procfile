@@ -1,1 +1,1 @@
-web: bin/hubot -a slack
+web: bundle exec ruby main.rb
